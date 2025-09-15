@@ -41,24 +41,23 @@ Route::middleware('auth')->group(function () {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Recupera l'utente worker autenticato
         $worker = auth()->user();
-
-        // Carica le sue prenotazioni usando la relazione che abbiamo definito.
-        // 'with()' pre-carica i dati del servizio e del cliente per efficienza (evita query N+1)
         $reservations = $worker->reservationsAsWorker()->with('service', 'customer')->get();
 
-        // Formatta i dati nel formato che FullCalendar si aspetta
-        $events = $reservations->map(function ($reservation) {
+        // Definiamo una palette di colori per le nostre classi CSS
+        $colors = ['event-blue', 'event-green', 'event-purple', 'event-orange'];
+
+        $events = $reservations->map(function ($reservation, $index) use ($colors) {
             return [
                 'title' => $reservation->service->name . ' - ' . $reservation->customer->name,
                 'start' => $reservation->start_time,
                 'end'   => $reservation->end_time,
                 'id'    => $reservation->id,
+                // Assegna una classe colore a rotazione
+                'className' => $colors[$index % count($colors)]
             ];
         });
 
-        // Restituisci i dati come risposta JSON
         return response()->json($events);
     })->name('worker.reservations.data'); // Diamo un nome alla rotta
 
