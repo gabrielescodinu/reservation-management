@@ -5,46 +5,42 @@
         </h2>
     </x-slot>
 
-    <style>
-        /* Stile base per tutti gli eventi */
-        .fc-event {
-            border-width: 2px !important;
-            /* Forza il bordo più spesso */
-            padding: 5px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    @push('styles')
+        <style>
+            /* Stile base per tutti gli eventi */
+            .fc-event {
+                border-width: 2px !important;
+                padding: 5px;
+                cursor: pointer;
+            }
 
-        .fc-event:hover {
-            opacity: 0.8;
-        }
+            /* Palette di colori (ora con un selettore più specifico: .fc-event) */
+            .fc-event.event-blue {
+                background-color: rgba(59, 130, 246, 0.1) !important;
+                border-color: rgba(59, 130, 246, 1) !important;
+            }
 
-        /* Palette di colori */
-        .event-blue {
-            background-color: rgba(59, 130, 246, 0.1) !important;
-            border-color: rgba(59, 130, 246, 1) !important;
-            color: #333 !important;
-            /* Colore del testo */
-        }
+            .fc-event.event-green {
+                background-color: rgba(16, 185, 129, 0.1) !important;
+                border-color: rgba(16, 185, 129, 1) !important;
+            }
 
-        .event-green {
-            background-color: rgba(16, 185, 129, 0.1) !important;
-            border-color: rgba(16, 185, 129, 1) !important;
-            color: #333 !important;
-        }
+            .fc-event.event-purple {
+                background-color: rgba(139, 92, 246, 0.1) !important;
+                border-color: rgba(139, 92, 246, 1) !important;
+            }
 
-        .event-purple {
-            background-color: rgba(139, 92, 246, 0.1) !important;
-            border-color: rgba(139, 92, 246, 1) !important;
-            color: #333 !important;
-        }
+            .fc-event.event-orange {
+                background-color: rgba(249, 115, 22, 0.1) !important;
+                border-color: rgba(249, 115, 22, 1) !important;
+            }
 
-        .event-orange {
-            background-color: rgba(249, 115, 22, 0.1) !important;
-            border-color: rgba(249, 115, 22, 1) !important;
-            color: #333 !important;
-        }
-    </style>
+            .fc-v-event .fc-event-title, .fc-event-time{
+                color: #1f2937 !important;
+                /* Un grigio molto scuro e leggibile */
+            }
+        </style>
+    @endpush
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -87,7 +83,7 @@
 
                     // 4. Rimuove la riga "tutto il giorno" in cima al calendario
                     allDaySlot: false,
-                    
+
                     // La rotta da cui caricare gli eventi
                     // ATTENZIONE: Assicurati di usare la rotta corretta (web o api)
                     // Se usi la rotta api, l'autenticazione è diversa.
