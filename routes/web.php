@@ -6,6 +6,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\WorkerDashboardController;
 use App\Http\Controllers\ReservationController;
 use App\Models\Service;
+use App\Http\Controllers\CustomerDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,6 +62,9 @@ Route::middleware('auth')->group(function () {
 
         return response()->json($events);
     })->name('worker.reservations.data'); // Diamo un nome alla rotta
+
+    Route::get('/my-reservations', [CustomerDashboardController::class, 'index'])
+        ->name('customer.dashboard');
 
     Route::resource('reservations', ReservationController::class)->only(['store']);
 
