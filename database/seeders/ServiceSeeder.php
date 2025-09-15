@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\User;   // <-- Importa User
-use App\Models\Service; // <-- Importa Service
+use App\Models\User;
+use App\Models\Service;
 
 class ServiceSeeder extends Seeder
 {
@@ -14,10 +14,7 @@ class ServiceSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pulisce la tabella prima di popolarla
-        // Service::truncate();
-
-        // Troviamo gli utenti con ruolo 'worker'
+        // Troviamo tutti gli utenti con ruolo 'worker'
         $workers = User::where('role', 'worker')->get();
 
         if ($workers->isEmpty()) {
@@ -25,31 +22,59 @@ class ServiceSeeder extends Seeder
             return;
         }
 
-        // Creiamo i servizi e li associamo ai worker
-        Service::create([
-            'user_id' => $workers->first()->id, // Assegna al primo worker
-            'name' => 'Taglio Capelli Uomo',
-            'description' => 'Taglio classico con shampoo e styling.',
-            'price' => 25.00,
-            'duration' => 30, // in minuti
-        ]);
-
-        Service::create([
-            'user_id' => $workers->first()->id, // Assegna al primo worker
-            'name' => 'Rasatura Barba',
-            'description' => 'Rasatura tradizionale con panno caldo.',
-            'price' => 15.00,
-            'duration' => 20,
-        ]);
-
-        if (isset($workers[1])) {
-            Service::create([
-                'user_id' => $workers[1]->id, // Assegna al secondo worker
-                'name' => 'Consulenza Web',
-                'description' => 'Consulenza di un\'ora per il tuo progetto web.',
-                'price' => 80.00,
+        // Definiamo una lista di servizi standard per estetiste
+        $servicesList = [
+            [
+                'name' => 'Manicure Estetica',
+                'description' => 'Trattamento completo per unghie e mani, con applicazione di smalto classico.',
+                'price' => 20.00,
+                'duration' => 45,
+            ],
+            [
+                'name' => 'Smalto Semipermanente',
+                'description' => 'Applicazione di smalto semipermanente a lunga durata con lampada UV.',
+                'price' => 35.00,
                 'duration' => 60,
-            ]);
+            ],
+            [
+                'name' => 'Pedicure Estetico',
+                'description' => 'Trattamento di bellezza per piedi e unghie, con massaggio finale.',
+                'price' => 35.00,
+                'duration' => 60,
+            ],
+            [
+                'name' => 'Pulizia Viso Profonda',
+                'description' => 'Trattamento purificante e rigenerante per la pelle del viso con vapore e maschera specifica.',
+                'price' => 50.00,
+                'duration' => 75,
+            ],
+            [
+                'name' => 'Massaggio Rilassante (50 min)',
+                'description' => 'Massaggio total body con oli essenziali per alleviare stress e tensioni muscolari.',
+                'price' => 60.00,
+                'duration' => 50,
+            ],
+            [
+                'name' => 'Epilazione Gambe e Inguine',
+                'description' => 'Ceretta completa per gambe e zona inguine con cera delicata.',
+                'price' => 40.00,
+                'duration' => 45,
+            ],
+        ];
+
+        // Usiamo un ciclo per assegnare tutti i servizi a ogni worker
+        foreach ($workers as $worker) {
+            foreach ($servicesList as $serviceData) {
+                Service::create([
+                    'user_id' => $worker->id,
+                    'name' => $serviceData['name'],
+                    'description' => $serviceData['description'],
+                    'price' => $serviceData['price'],
+                    'duration' => $serviceData['duration'],
+                ]);
+            }
         }
+
+        $this->command->info('Servizi per estetiste creati per ' . $workers->count() . ' worker.');
     }
 }
