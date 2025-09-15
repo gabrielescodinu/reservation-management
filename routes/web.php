@@ -3,8 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\WorkerDashboardController; // Creeremo questo controller tra poco
+use App\Http\Controllers\WorkerDashboardController;
 use App\Http\Controllers\ReservationController;
+use App\Models\Service;
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,6 +63,24 @@ Route::middleware('auth')->group(function () {
     })->name('worker.reservations.data'); // Diamo un nome alla rotta
 
     Route::resource('reservations', ReservationController::class)->only(['store']);
+
+    Route::get('/services/{service}/reservations', function (Service $service) {
+        $reservations = $service->reservations()
+            ->where('start_time', '>=', now())
+            ->get();
+
+        $events = $reservations->map(function ($reservation) {
+            return [
+                'title' => 'Occupato', // Non mostriamo i dettagli agli altri clienti
+                'start' => $reservation->start_time,
+                'end' => $reservation->end_time,
+                'backgroundColor' => '#d1d5db', // Grigio
+                'borderColor' => '#d1d5db',
+            ];
+        });
+
+        return response()->json($events);
+    })->name('services.reservations');
 });
 
 require __DIR__.'/auth.php';

@@ -4,10 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // <-- Importa Auth
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class ServiceController extends Controller
 {
+    public function index(): View
+    {
+        // Carichiamo tutti i servizi con la relazione 'worker' per evitare query N+1
+        $services = Service::with('worker')->latest()->get();
+
+        return view('services.index', compact('services'));
+    }
+
+    public function show(Service $service): View
+    {
+        return view('services.show', compact('service'));
+    }
+
     /**
      * Mostra il form per creare un nuovo servizio.
      */
