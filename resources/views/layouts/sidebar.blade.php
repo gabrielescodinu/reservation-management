@@ -1,6 +1,6 @@
 <div class="flex flex-shrink-0">
     {{-- Inizializziamo Alpine.js per gestire lo stato dei sottomenu --}}
-    <div x-data="{ activeSection: '' }" class="flex flex-col w-64 bg-slate-800 text-slate-300">
+    <div x-data="{ activeSection: '' }" class="flex flex-col w-64 bg-slate-900 text-slate-300">
 
         <div class="flex items-center h-16 flex-shrink-0 px-4 border-b border-slate-700">
             <a href="{{ route('dashboard') }}" class="flex items-center">
