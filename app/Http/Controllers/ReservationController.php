@@ -62,6 +62,6 @@ class ReservationController extends Controller
         ]);
 
         // 5. Reindirizza con un messaggio di successo
-        return redirect()->route('dashboard')->with('status', 'Prenotazione confermata con successo!');
+        return redirect()->route('customer.dashboard')->with('status', 'Prenotazione confermata con successo!');
     }
 }
