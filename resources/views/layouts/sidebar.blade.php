@@ -2,7 +2,7 @@
     {{-- Inizializziamo Alpine.js per gestire lo stato dei sottomenu --}}
     <div x-data="{ activeSection: '' }" class="flex flex-col w-64 bg-slate-800 text-slate-300">
 
-        <div class="flex items-center justify-center h-16 flex-shrink-0 px-4 border-b border-slate-700">
+        <div class="flex items-center h-16 flex-shrink-0 px-4 border-b border-slate-700">
             <a href="{{ route('dashboard') }}" class="flex items-center">
                 <x-application-logo class="block h-9 w-auto fill-current text-white" />
                 <span class="ml-3 font-semibold text-white">My App</span>
