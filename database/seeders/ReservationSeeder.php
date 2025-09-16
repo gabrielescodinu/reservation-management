@@ -12,7 +12,6 @@ class ReservationSeeder extends Seeder
 {
     public function run(): void
     {
-        // Recupera tutti i worker con i loro servizi e tutti i clienti
         $workers = User::where('role', 'worker')->with('services')->get();
         $customers = User::where('role', 'customer')->get();
 
@@ -21,34 +20,59 @@ class ReservationSeeder extends Seeder
             return;
         }
 
-        $this->command->info('Creazione di prenotazioni casuali...');
+        // --- CREAZIONE PRENOTAZIONI PASSATE ---
+        $this->command->info('Creazione di prenotazioni passate...');
+        $this->createReservationsInTimeRange(
+            150, // Numero di prenotazioni da creare
+            365, // Periodo di tempo in giorni
+            'past', // Specifica che sono nel passato
+            $workers,
+            $customers
+        );
 
-        $reservationsToCreate = 30; // Numero di prenotazioni da creare
-        $daysInFuture = 20; // Periodo di tempo in cui creare le prenotazioni (es. prossimi 20 giorni)
+        // --- CREAZIONE PRENOTAZIONI FUTURE ---
+        $this->command->info('Creazione di prenotazioni future...');
+        $this->createReservationsInTimeRange(
+            50,  // Numero di prenotazioni da creare
+            60,  // Periodo di tempo in giorni
+            'future', // Specifica che sono nel futuro
+            $workers,
+            $customers
+        );
 
-        for ($i = 0; $i < $reservationsToCreate; $i++) {
-            // Seleziona un worker, un cliente e un servizio a caso
+        $this->command->info('Prenotazioni casuali create con successo.');
+    }
+
+    /**
+     * Funzione helper per creare prenotazioni in un dato intervallo di tempo (passato o futuro).
+     */
+    private function createReservationsInTimeRange(int $count, int $daysRange, string $direction, $workers, $customers): void
+    {
+        for ($i = 0; $i < $count; $i++) {
             $worker = $workers->random();
             $customer = $customers->random();
 
-            // Assicurati che il worker abbia dei servizi
             if ($worker->services->isEmpty()) {
-                continue; // Salta questo ciclo se il worker non ha servizi
+                continue;
             }
             $service = $worker->services->random();
 
-            // Tenta di trovare uno slot libero per la prenotazione
             $maxAttempts = 10;
             for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-                // Genera una data e ora di inizio casuale
-                $randomDay = rand(0, $daysInFuture);
-                $randomHour = rand(8, 18); // Orario di lavoro tra le 8 e le 18
-                $randomMinute = rand(0, 1) ? 0 : 30; // Inizia all'ora o alla mezz'ora
+                $randomDay = rand(1, $daysRange);
+                $randomHour = rand(8, 18);
+                $randomMinute = rand(0, 1) ? 0 : 30;
 
-                $startTime = Carbon::today()->addDays($randomDay)->setHour($randomHour)->setMinute($randomMinute);
+                // Determina se aggiungere o sottrarre giorni in base alla direzione
+                if ($direction === 'past') {
+                    $startTime = Carbon::today()->subDays($randomDay)->setHour($randomHour)->setMinute($randomMinute);
+                } else {
+                    $startTime = Carbon::today()->addDays($randomDay)->setHour($randomHour)->setMinute($randomMinute);
+                }
+
                 $endTime = $startTime->copy()->addMinutes($service->duration);
 
-                // Controlla se lo slot è già occupato per quel worker
+                // Controllo anti-sovrapposizione
                 $isOccupied = Reservation::whereHas('service', function ($query) use ($worker) {
                     $query->where('user_id', $worker->id);
                 })->where(function ($query) use ($startTime, $endTime) {
@@ -56,27 +80,16 @@ class ReservationSeeder extends Seeder
                         ->where('end_time', '>', $startTime);
                 })->exists();
 
-                // Se lo slot è libero, crea la prenotazione e interrompi il ciclo di tentativi
                 if (!$isOccupied) {
-                    $this->createReservation($customer->id, $service, $startTime);
+                    Reservation::create([
+                        'customer_id' => $customer->id,
+                        'service_id' => $service->id,
+                        'start_time' => $startTime,
+                        'end_time' => $endTime,
+                    ]);
                     break;
                 }
             }
         }
-
-        $this->command->info('Prenotazioni casuali create con successo.');
-    }
-
-    /**
-     * Funzione helper per creare una prenotazione (invariata)
-     */
-    private function createReservation(int $customerId, Service $service, Carbon $startTime): void
-    {
-        Reservation::create([
-            'customer_id' => $customerId,
-            'service_id' => $service->id,
-            'start_time' => $startTime,
-            'end_time' => $startTime->copy()->addMinutes($service->duration),
-        ]);
     }
 }

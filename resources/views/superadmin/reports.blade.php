@@ -70,14 +70,14 @@
                                 displayColors: false,
                                 callbacks: {
                                     title: (tooltipItems) => tooltipItems[0].label,
-                                    label: (context) => `Incasso: ${context.raw.toFixed(2)} €`,
+                                    label: (context) => `Incasso: ${context.parsed.y.toFixed(2)} €`,
                                 }
                             }
                         },
                         scales: {
                             x: {
                                 grid: {
-                                    display: false, // Manteniamo la griglia verticale nascosta
+                                    display: true, // Manteniamo la griglia verticale nascosta
                                 },
                                 ticks: {
                                     color: 'rgb(107, 114, 128)', // Grigio medio per le etichette
