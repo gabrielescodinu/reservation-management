@@ -87,3 +87,56 @@ it('la creazione del servizio fallisce se i dati non sono validi', function () {
     // Assicurati che nulla sia stato salvato nel database
     $this->assertDatabaseCount('services', 0);
 });
+
+test('un worker può modificare un proprio servizio', function () {
+    $worker = User::factory()->create(['role' => 'worker']);
+    $service = Service::factory()->create(['user_id' => $worker->id]);
+
+    $newData = [
+        'name' => 'Nome Servizio Modificato',
+        'price' => 99.99,
+        'duration' => 45,
+    ];
+
+    actingAs($worker)
+        ->put(route('services.update', $service), $newData)
+        ->assertRedirect(route('services.index'));
+
+    $this->assertDatabaseHas('services', [
+        'id' => $service->id,
+        'name' => 'Nome Servizio Modificato',
+    ]);
+});
+
+test('un worker non può modificare il servizio di un altro worker', function () {
+    $workerOwner = User::factory()->create(['role' => 'worker']);
+    $anotherWorker = User::factory()->create(['role' => 'worker']);
+    $service = Service::factory()->create(['user_id' => $workerOwner->id]);
+
+    actingAs($anotherWorker)
+        ->get(route('services.edit', $service))
+        ->assertForbidden(); // Verifica che non possa nemmeno vedere la pagina di modifica
+
+    actingAs($anotherWorker)
+        ->put(route('services.update', $service), ['name' => 'Tentativo di modifica'])
+        ->assertForbidden(); // Verifica che non possa inviare i dati
+});
+
+test('un superadmin può modificare il servizio di qualsiasi worker', function () {
+    $superadmin = User::factory()->create(['role' => 'superadmin']);
+    $worker = User::factory()->create(['role' => 'worker']);
+    $service = Service::factory()->create(['user_id' => $worker->id]);
+
+    $newData = [
+        'name' => 'Modificato da Admin',
+        'description' => $service->description,
+        'price' => $service->price,
+        'duration' => $service->duration,
+    ];
+
+    actingAs($superadmin)
+        ->put(route('services.update', $service), $newData)
+        ->assertRedirect(route('services.index'));
+
+    $this->assertDatabaseHas('services', ['name' => 'Modificato da Admin']);
+});
