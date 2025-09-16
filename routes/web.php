@@ -100,17 +100,25 @@ Route::middleware(['auth', 'is.superadmin'])->group(function () {
 
 Route::middleware(['auth', 'is.superadmin'])->get('/superadmin/reservations-data', function () {
     $reservations = Reservation::with('service.worker', 'customer')->get();
+    $colors = ['event-blue', 'event-green', 'event-purple', 'event-orange'];
+
     // (La logica per formattare gli eventi è la stessa del worker dashboard, ma senza filtri)
-    $events = $reservations->map(function ($reservation) {
+    $events = $reservations->map(function ($reservation, $index) use ($colors) {
         return [
             'id' => $reservation->id,
             'title' => $reservation->service->name . ' - ' . $reservation->customer->name,
             'start' => $reservation->start_time,
             'end' => $reservation->end_time,
-            'extendedProps' => [ /* ... dettagli ... */]
+            'className' => $colors[$index % count($colors)],
+            'extendedProps' => [
+                'serviceName' => $reservation->service->name,
+                'customerName' => $reservation->customer->name,
+                'workerName' => $reservation->service->worker->name,
+            ]
         ];
     });
     return response()->json($events);
+    
 })->name('superadmin.reservations.data');
 
 require __DIR__ . '/auth.php';
