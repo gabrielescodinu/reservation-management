@@ -26,8 +26,18 @@
                                 </p>
                             </div>
 
+                            {{-- in resources/views/customer/dashboard.blade.php --}}
+
                             <div class="mt-4 sm:mt-0 sm:text-right w-full sm:w-auto">
-                                @if ($reservation->status === 'confirmed')
+
+                                {{-- 1. Controlliamo prima di tutto se la data della prenotazione è passata --}}
+                                @if (\Carbon\Carbon::parse($reservation->start_time)->isPast())
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Effettuata
+                                    </span>
+
+                                    {{-- 2. Se non è passata, controlliamo lo stato come prima --}}
+                                @elseif ($reservation->status === 'confirmed')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         Confermata
                                     </span>
@@ -38,15 +48,16 @@
                                 @endif
 
                                 <div class="mt-2">
-                                    {{-- 2. Il form ora ha un 'x-ref' per essere identificato da Alpine.js --}}
-                                    <form action="{{ route('reservations.destroy', $reservation) }}" method="POST" x-ref="deleteForm">
-                                        @csrf
-                                        @method('DELETE')
-                                        {{-- 3. Il pulsante ora apre la modale invece di inviare il form direttamente --}}
-                                        <button type="button" @click="showConfirmModal = true" class="text-xs text-red-600 hover:text-red-900 font-semibold">
-                                            Annulla Prenotazione
-                                        </button>
-                                    </form>
+                                    {{-- 3. BONUS: Mostriamo il pulsante "Annulla" solo per le prenotazioni future e confermate --}}
+                                    @if ($reservation->status === 'confirmed' && \Carbon\Carbon::parse($reservation->start_time)->isFuture())
+                                        <form action="{{ route('reservations.destroy', $reservation) }}" method="POST" x-ref="deleteForm">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" @click="showConfirmModal = true" class="text-xs text-red-600 hover:text-red-900 font-semibold">
+                                                Annulla Prenotazione
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         </div>

@@ -21,7 +21,7 @@ class CustomerDashboardController extends Controller
         // evitando query multiple e rendendo tutto più efficiente (Eager Loading).
         $reservations = $customer->reservationsAsCustomer()
             ->with('service.worker')
-            ->orderBy('start_time', 'desc')
+            ->orderBy('start_time', 'asc')
             ->get();
 
         // Passa i dati alla vista
