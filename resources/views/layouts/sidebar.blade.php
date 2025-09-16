@@ -21,6 +21,7 @@
                     {{ __('Dashboard') }}
                 </x-side-nav-link>
 
+                {{-- Menu Condizionale per Super Admin --}}
                 @if (auth()->user()->role === 'superadmin')
                     <x-side-nav-link :href="route('superadmin.dashboard')" :active="request()->routeIs('superadmin.dashboard')">
                         <x-slot name="icon">
@@ -46,8 +47,17 @@
                         </x-slot>
                         {{ __('I Miei Servizi') }}
                     </x-side-nav-link>
+                    <x-side-nav-link :href="route('superadmin.reports')" :active="request()->routeIs('superadmin.reports')">
+                        <x-slot name="icon">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-1.621-1.621a3 3 0 01-.879-2.122V17.25M9 17.25A3.001 3.001 0 005.4 15m3.6 2.25c-.621 0-1.125-.504-1.125-1.125M9 17.25c0 .621.504 1.125 1.125 1.125M9 17.25H6.75m6.75-10.5V6a3 3 0 013-3h2.25M15.75 6v.75m0-3v.75m0 0h3m-3 0h-3m-6.75 12h2.25m-2.25 0H6m6.75-10.5h2.25m-2.25 0H9" />
+                            </svg>
+                        </x-slot>
+                        {{ __('Report Incassi') }}
+                    </x-side-nav-link>
                 @endif
 
+                {{-- Menu Condizionale per Worker --}}
                 @if (auth()->user()->role === 'worker')
                     <x-side-nav-link :href="route('worker.dashboard')" :active="request()->routeIs('worker.dashboard')">
                         <x-slot name="icon">

@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'is.superadmin'])->group(function () {
     Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'index'])->name('superadmin.dashboard');
     Route::get('/superadmin/calendar', [SuperAdminDashboardController::class, 'calendar'])->name('superadmin.calendar');
+    Route::get('/superadmin/reports', [SuperAdminDashboardController::class, 'reports'])->name('superadmin.reports');
+
     Route::get('/superadmin/reservations-data', function () {
         $reservations = Reservation::with('service.worker', 'customer')->get();
         $colors = ['event-blue', 'event-green', 'event-purple', 'event-orange'];
