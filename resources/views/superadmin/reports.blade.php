@@ -5,26 +5,55 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+   <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- 1. Usiamo una griglia per affiancare i grafici su schermi grandi --}}
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            
+            {{-- NUOVO FORM PER I FILTRI --}}
+            <div class="bg-white shadow-sm sm:rounded-lg p-4 mb-6">
+                <form action="{{ route('superadmin.reports') }}" method="GET" class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div>
+                        <label for="month" class="sr-only">Mese</label>
+                        <select name="month" id="month" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            @foreach (range(1, 12) as $month)
+                                <option value="{{ $month }}" {{ $selectedMonth == $month ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::create(null, $month)->isoFormat('MMMM') }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="year" class="sr-only">Anno</label>
+                        <select name="year" id="year" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            @foreach (range(now()->year, 2024) as $year)
+                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
+                                    {{ $year }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <x-primary-button>Filtra</x-primary-button>
+                    </div>
+                </form>
+            </div>
+            {{-- FINE FORM --}}
 
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 <div class="lg:col-span-3 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Incassi degli ultimi 30 giorni</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">
+                        Incassi per {{ \Carbon\Carbon::create($selectedYear, $selectedMonth)->isoFormat('MMMM YYYY') }}
+                    </h3>
                     <div class="mt-6 h-96">
-                        {{-- 2. Abbiamo rinominato l'ID per chiarezza --}}
                         <canvas id="revenueLineChart"></canvas>
                     </div>
                 </div>
 
                 <div class="lg:col-span-2 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Incassi per Servizio (Top 7)</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">Incassi per Servizio</h3>
                     <div class="mt-6 h-96 flex items-center justify-center">
                         <canvas id="revenuePieChart"></canvas>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

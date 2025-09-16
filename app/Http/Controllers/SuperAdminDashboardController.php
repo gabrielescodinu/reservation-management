@@ -27,44 +27,51 @@ class SuperAdminDashboardController extends Controller
 
     // in SuperAdminDashboardController.php
 
-    public function reports(): View
+    public function reports(Request $request): View
     {
-        // --- DATI PER IL GRAFICO A LINEE (leggermente rinominato per chiarezza) ---
-        $days = 30;
-        $startDate = now()->subDays($days - 1)->startOfDay();
-        $endDate = now()->endOfDay();
+        // 1. Legge mese e anno dalla richiesta, o usa quelli correnti come default
+        $selectedYear = $request->input('year', now()->year);
+        $selectedMonth = $request->input('month', now()->month);
+
+        // 2. Crea le date di inizio e fine per il mese selezionato
+        $startDate = Carbon::create($selectedYear, $selectedMonth, 1)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+
+        // --- DATI PER IL GRAFICO A LINEE (ora dinamico) ---
         $revenueData = Reservation::join('services', 'reservations.service_id', '=', 'services.id')
             ->where('reservations.status', 'confirmed')
-            ->where('reservations.start_time', '<', now())
-            ->whereBetween('reservations.start_time', [$startDate, $endDate])
+            ->whereBetween('reservations.start_time', [$startDate, $endDate]) // Usa il range dinamico
             ->select(DB::raw('DATE(reservations.start_time) as date'), DB::raw('SUM(services.price) as total'))
             ->groupBy('date')->orderBy('date', 'asc')->pluck('total', 'date');
 
+        // Prepara i dati per tutti i giorni del mese selezionato
+        $daysInMonth = $startDate->daysInMonth;
         $lineChartLabels = [];
         $lineChartData = [];
-        for ($i = 0; $i < $days; $i++) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $lineChartLabels[] = Carbon::parse($date)->isoFormat('D MMM');
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::create($selectedYear, $selectedMonth, $day)->format('Y-m-d');
+            $lineChartLabels[] = $day; // Etichetta solo con il numero del giorno
             $lineChartData[] = $revenueData[$date] ?? 0;
         }
-        $lineChartLabels = array_reverse($lineChartLabels);
-        $lineChartData = array_reverse($lineChartData);
 
-        // --- NUOVA QUERY PER IL GRAFICO A TORTA ---
-        // Calcoliamo il totale incassato per ogni servizio (solo i top 7 per leggibilità)
+        // --- DATI PER IL GRAFICO A TORTA (ora dinamico) ---
         $revenueByService = Reservation::join('services', 'reservations.service_id', '=', 'services.id')
-            ->where('reservations.start_time', '<', now())
             ->where('reservations.status', 'confirmed')
+            ->whereBetween('reservations.start_time', [$startDate, $endDate]) // Usa il range dinamico
             ->select('services.name', DB::raw('SUM(services.price) as total'))
-            ->groupBy('services.name')
-            ->orderBy('total', 'desc')
-            ->limit(7)
-            ->get();
+            ->groupBy('services.name')->orderBy('total', 'desc')->limit(7)->get();
 
         $pieChartLabels = $revenueByService->pluck('name');
         $pieChartData = $revenueByService->pluck('total');
 
-        // Passiamo tutti i dati alla vista
-        return view('superadmin.reports', compact('lineChartLabels', 'lineChartData', 'pieChartLabels', 'pieChartData'));
+        // 3. Passa tutti i dati, inclusi mese e anno selezionati, alla vista
+        return view('superadmin.reports', compact(
+            'lineChartLabels',
+            'lineChartData',
+            'pieChartLabels',
+            'pieChartData',
+            'selectedYear',
+            'selectedMonth'
+        ));
     }
 }
