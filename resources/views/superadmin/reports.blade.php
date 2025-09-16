@@ -120,7 +120,7 @@
                 // --- 2. CONFIGURAZIONE COMPLETA GRAFICO A TORTA ---
                 const pieCtx = document.getElementById('revenuePieChart').getContext('2d');
                 new Chart(pieCtx, {
-                    type: 'pie',
+                    type: 'doughnut',
                     data: {
                         labels: pieLabels,
                         datasets: [{
@@ -139,12 +139,14 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        cutout: '70%',
                         plugins: {
                             legend: {
                                 position: 'bottom',
                                 labels: {
                                     color: 'rgb(107, 114, 128)',
-                                    padding: 20
+                                    padding: 20,
+                                    usePointStyle: true
                                 }
                             },
                             tooltip: {
