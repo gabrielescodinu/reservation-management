@@ -59,7 +59,7 @@ it('un worker può creare un nuovo servizio', function () {
     // Esegui la richiesta POST per salvare il servizio
     actingAs($worker)
         ->post(route('services.store'), $serviceData)
-        ->assertRedirect(route('dashboard')); // Verifica il reindirizzamento
+        ->assertRedirect(route('services.index'));
 
     // Verifica che il servizio sia stato salvato nel database
     // con i dati corretti e associato al worker giusto.

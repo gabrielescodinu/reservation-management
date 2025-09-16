@@ -17,11 +17,18 @@
                             </p>
                             <p class="mt-2 text-gray-800 font-bold text-xl">{{ number_format($service->price, 2, ',', '.') }} €</p>
                             <p class="mt-1 text-sm text-gray-500">Durata: {{ $service->duration }} minuti</p>
-                            
+
                             <div class="mt-4">
                                 <a href="{{ route('services.show', $service) }}" class="w-full text-center inline-flex items-center justify-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                     Visualizza e Prenota
                                 </a>
+
+                                {{-- Mostra il pulsante Modifica solo se l'utente ha il permesso --}}
+                                @can('update', $service)
+                                    <a href="{{ route('services.edit', $service) }}" class="ml-3 text-sm text-gray-500 hover:text-gray-800">
+                                        Modifica
+                                    </a>
+                                @endcan
                             </div>
                         </div>
                     </div>
