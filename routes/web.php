@@ -6,8 +6,10 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\WorkerDashboardController;
 use App\Http\Controllers\ReservationController;
 use App\Models\Service;
+use App\Models\Reservation;
 use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\SuperAdminDashboardController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -65,14 +67,13 @@ Route::middleware('auth')->group(function () {
         });
 
         return response()->json($events);
-
     })->name('worker.reservations.data'); // Diamo un nome alla rotta
 
     Route::get('/my-reservations', [CustomerDashboardController::class, 'index'])
         ->name('customer.dashboard');
 
     Route::resource('reservations', ReservationController::class)->only(['store', 'destroy']);
-    
+
     Route::get('/services/{service}/reservations', function (Service $service) {
         $reservations = $service->reservations()
             ->where('start_time', '>=', now())
@@ -93,8 +94,23 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'is.superadmin'])->group(function () {
-    Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'index'])
-        ->name('superadmin.dashboard');
+    Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'index'])->name('superadmin.dashboard');
+    Route::get('/superadmin/calendar', [SuperAdminDashboardController::class, 'calendar'])->name('superadmin.calendar');
 });
 
-require __DIR__.'/auth.php';
+Route::middleware(['auth', 'is.superadmin'])->get('/superadmin/reservations-data', function () {
+    $reservations = Reservation::with('service.worker', 'customer')->get();
+    // (La logica per formattare gli eventi è la stessa del worker dashboard, ma senza filtri)
+    $events = $reservations->map(function ($reservation) {
+        return [
+            'id' => $reservation->id,
+            'title' => $reservation->service->name . ' - ' . $reservation->customer->name,
+            'start' => $reservation->start_time,
+            'end' => $reservation->end_time,
+            'extendedProps' => [ /* ... dettagli ... */]
+        ];
+    });
+    return response()->json($events);
+})->name('superadmin.reservations.data');
+
+require __DIR__ . '/auth.php';

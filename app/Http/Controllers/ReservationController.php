@@ -65,13 +65,19 @@ class ReservationController extends Controller
         return redirect()->route('customer.dashboard')->with('status', 'Prenotazione confermata con successo!');
     }
 
+    // in ReservationController.php
+
     public function destroy(Reservation $reservation): RedirectResponse
     {
         $user = auth()->user();
 
-        // 1. CONTROLLO DI AUTORIZZAZIONE MIGLIORATO
-        // Permetti la cancellazione se l'utente è il cliente OPPURE se è il worker del servizio.
-        if ($user->id !== $reservation->customer_id && $user->id !== $reservation->service->user_id) {
+        // 1. CONTROLLO DI AUTORIZZAZIONE FINALE
+        // Permetti la cancellazione se l'utente è il cliente, il worker del servizio, OPPURE un superadmin.
+        if (
+            $user->role !== 'superadmin' &&
+            $user->id !== $reservation->customer_id &&
+            $user->id !== $reservation->service->user_id
+        ) {
             abort(403, 'Azione non autorizzata.');
         }
 
@@ -79,9 +85,7 @@ class ReservationController extends Controller
         $reservation->delete();
 
         // 3. REINDIRIZZAMENTO INTELLIGENTE
-        // Se a cancellare è il worker, torna alla sua agenda. Altrimenti, a quella del cliente.
-        $redirectRoute = $user->role === 'worker' ? 'worker.dashboard' : 'customer.dashboard';
-
-        return redirect()->route($redirectRoute)->with('status', 'Prenotazione annullata con successo!');
+        // Torna indietro alla pagina precedente con un messaggio di successo.
+        return back()->with('status', 'Prenotazione annullata con successo!');
     }
 }

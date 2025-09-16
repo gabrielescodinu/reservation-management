@@ -17,4 +17,9 @@ class SuperAdminDashboardController extends Controller
 
         return view('superadmin.dashboard', compact('reservations'));
     }
+
+    public function calendar(): View
+    {
+        return view('superadmin.calendar');
+    }
 }
