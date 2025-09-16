@@ -34,8 +34,6 @@ Route::middleware('auth')->group(function () {
 // in routes/web.php
 
 Route::middleware('auth')->group(function () {
-    // ... tutte le tue altre rotte
-
     // NUOVA ROTTA: Fornisce i dati delle prenotazioni al calendario
     Route::get('/worker/reservations-data', function () {
         // Assicurati che l'utente sia un worker
@@ -55,12 +53,19 @@ Route::middleware('auth')->group(function () {
                 'start' => $reservation->start_time,
                 'end'   => $reservation->end_time,
                 'id'    => $reservation->id,
-                // Assegna una classe colore a rotazione
-                'className' => $colors[$index % count($colors)]
+                'className' => $colors[$index % count($colors)],
+
+                'extendedProps' => [
+                    'serviceName' => $reservation->service->name,
+                    'customerName' => $reservation->customer->name,
+                    'price' => number_format($reservation->service->price, 2, ',', '.') . ' €',
+                    'duration' => $reservation->service->duration . ' minuti',
+                ]
             ];
         });
 
         return response()->json($events);
+
     })->name('worker.reservations.data'); // Diamo un nome alla rotta
 
     Route::get('/my-reservations', [CustomerDashboardController::class, 'index'])

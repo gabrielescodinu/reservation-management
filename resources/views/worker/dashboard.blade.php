@@ -6,43 +6,49 @@
     </x-slot>
 
     @push('styles')
-        <style>
-            /* Stile base per tutti gli eventi */
-            .fc-event {
-                border-width: 2px !important;
-                padding: 5px;
-                cursor: pointer;
-            }
+    <style>
+        [x-cloak] { display: none !important; }
 
-            /* Palette di colori (ora con un selettore più specifico: .fc-event) */
-            .fc-event.event-blue {
-                background-color: rgba(59, 130, 246, 0.1) !important;
-                border-color: rgba(59, 130, 246, 1) !important;
-            }
+        /* Stile base per gli eventi cliccabili */
+        .fc-event {
+            border-width: 2px !important;
+            padding: 5px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        .fc-event:hover {
+            opacity: 0.8;
+        }
 
-            .fc-event.event-green {
-                background-color: rgba(16, 185, 129, 0.1) !important;
-                border-color: rgba(16, 185, 129, 1) !important;
-            }
-
-            .fc-event.event-purple {
-                background-color: rgba(139, 92, 246, 0.1) !important;
-                border-color: rgba(139, 92, 246, 1) !important;
-            }
-
-            .fc-event.event-orange {
-                background-color: rgba(249, 115, 22, 0.1) !important;
-                border-color: rgba(249, 115, 22, 1) !important;
-            }
-
-            .fc-v-event .fc-event-title, .fc-event-time{
-                color: #1f2937 !important;
-                /* Un grigio molto scuro e leggibile */
-            }
-        </style>
+        /* Palette di colori per gli eventi */
+        .fc-event.event-blue { background-color: rgba(59, 130, 246, 0.1) !important; border-color: rgba(59, 130, 246, 1) !important; }
+        .fc-event.event-green { background-color: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 1) !important; }
+        .fc-event.event-purple { background-color: rgba(139, 92, 246, 0.1) !important; border-color: rgba(139, 92, 246, 1) !important; }
+        .fc-event.event-orange { background-color: rgba(249, 115, 22, 0.1) !important; border-color: rgba(249, 115, 22, 1) !important; }
+        
+        /* Regola per rendere il testo scuro e leggibile nelle viste week/day */
+        .fc-v-event .fc-event-title, .fc-v-event .fc-event-time {
+            color: #1f2937 !important;
+        }
+    </style>
     @endpush
 
-    <div class="py-12">
+    {{-- 1. Inizializziamo Alpine.js per gestire la modale --}}
+    <div x-data="{
+            showEventModal: false,
+            selectedEvent: {},
+            handleEventClick(event) {
+                this.selectedEvent = {
+                    id: event.id,
+                    title: event.title,
+                    start: event.start.toLocaleString('it-IT', { dateStyle: 'long', timeStyle: 'short'}),
+                    ...event.extendedProps
+                };
+                this.showEventModal = true;
+            }
+        }"
+        @open-event-modal.window="handleEventClick($event.detail)"
+        class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -50,46 +56,72 @@
                 </div>
             </div>
         </div>
+
+        {{-- 2. HTML della Modale di Dettaglio/Cancellazione --}}
+        <div x-show="showEventModal" @keydown.escape.window="showEventModal = false" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-75" x-cloak x-transition>
+            <div @click.away="showEventModal = false" class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-lg mx-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Dettaglio Prenotazione</h3>
+                    <button @click="showEventModal = false">
+                        <svg class="h-6 w-6 text-gray-500 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div class="mt-4 border-t pt-4 space-y-1">
+                    <p class="text-sm text-gray-500">Servizio: <strong class="text-gray-800" x-text="selectedEvent.serviceName"></strong></p>
+                    <p class="text-sm text-gray-500">Cliente: <strong class="text-gray-800" x-text="selectedEvent.customerName"></strong></p>
+                    <p class="text-sm text-gray-500">Quando: <strong class="text-gray-800" x-text="selectedEvent.start"></strong></p>
+                    <p class="text-sm text-gray-500">Durata: <strong class="text-gray-800" x-text="selectedEvent.duration"></strong></p>
+                    <p class="text-sm text-gray-500">Prezzo: <strong class="text-gray-800" x-text="selectedEvent.price"></strong></p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <form :action="'/reservations/' + selectedEvent.id" method="POST" onsubmit="return confirm('Sei sicuro di voler annullare questa prenotazione?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-900 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            Annulla Appuntamento
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     @push('scripts')
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+        {{-- Alpine.js viene già caricato da app.js, ma includerlo non crea problemi --}}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth', // Vista mensile di default
+                const calendarEl = document.getElementById('calendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek', // Vista settimanale, più utile per un'agenda
+                    locale: 'it',
                     headerToolbar: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay' // Viste disponibili
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
-
-                    // --- NUOVE OPZIONI PER GLI ORARI DI LAVORO ---
-
-                    // 1. Nasconde la domenica
-                    hiddenDays: [0], // 0 = Domenica, 1 = Lunedì, ..., 6 = Sabato
-
-                    // 2. Imposta l'inizio e la fine della griglia oraria visibile
+                    events: '{{ route("worker.reservations.data") }}',
+                    hiddenDays: [ 0 ], 
                     slotMinTime: '08:00:00',
                     slotMaxTime: '19:00:00',
-
-                    // 3. Evidenzia le ore lavorative (opzionale ma consigliato)
                     businessHours: {
-                        daysOfWeek: [1, 2, 3, 4, 5, 6], // Da Lunedì a Sabato
+                        daysOfWeek: [ 1, 2, 3, 4, 5, 6 ],
                         startTime: '08:00',
                         endTime: '19:00',
                     },
-
-                    // 4. Rimuove la riga "tutto il giorno" in cima al calendario
                     allDaySlot: false,
 
-                    // La rotta da cui caricare gli eventi
-                    // ATTENZIONE: Assicurati di usare la rotta corretta (web o api)
-                    // Se usi la rotta api, l'autenticazione è diversa.
-                    // Per un approccio più semplice, sposta la logica della rotta api in una rotta web.
-                    events: '{{ route('worker.reservations.data') }}'
-                    // Per usare una rotta web, avrai bisogno di un token API o di usare cookie-based auth
+                    // 3. Funzione che si attiva al click su un evento esistente
+                    eventClick: function(info) {
+                        info.jsEvent.preventDefault(); // Evita comportamenti di default
+                        
+                        // Lancia l'evento personalizzato per Alpine.js
+                        const event = new CustomEvent('open-event-modal', {
+                            bubbles: true,
+                            detail: info.event
+                        });
+                        calendarEl.dispatchEvent(event);
+                    }
                 });
                 calendar.render();
             });
