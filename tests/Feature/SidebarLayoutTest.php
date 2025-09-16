@@ -15,12 +15,13 @@ test('un worker vede i link corretti nella sidebar', function () {
     // 2. Agisci: Fai il login come worker e visita la dashboard
     actingAs($worker)
         ->get(route('dashboard'))
-        ->assertOk() // Assicurati che la pagina si carichi
+        ->assertOk()
         // 3. Verifica: Controlla che i link corretti siano presenti
         ->assertSee('La Mia Agenda')
-        ->assertSee('Gestisci Servizi')
-        // E che i link del cliente NON siano presenti
-        ->assertDontSee('Le Mie Prenotazioni');
+        ->assertSee('I Miei Servizi')
+        // E che i link del customer NON siano presenti
+        ->assertDontSee('Le Mie Prenotazioni')
+        ->assertDontSee('Trova Servizi');
 });
 
 test('un cliente vede i link corretti nella sidebar', function () {
