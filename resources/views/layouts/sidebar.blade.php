@@ -1,5 +1,4 @@
-<div class="flex flex-shrink-0">
-    {{-- Inizializziamo Alpine.js per gestire lo stato dei sottomenu --}}
+<div class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-300 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0" :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
     <div x-data="{ activeSection: '' }" class="flex flex-col w-64 bg-slate-900 text-slate-300">
 
         <div class="flex items-center h-16 flex-shrink-0 px-4 border-b border-slate-700">

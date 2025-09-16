@@ -1,28 +1,42 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <head>
+        <meta charset="utf-t">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
-</head>
-<body class="font-sans antialiased">
-    <div class="h-screen bg-gray-100 flex">
-        @include('layouts.sidebar')
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
+    </head>
+    <body class="font-sans antialiased">
+        {{-- 1. Contenitore principale con lo stato Alpine.js per la sidebar --}}
+        <div x-data="{ sidebarOpen: false }" class="h-screen bg-gray-100 flex overflow-hidden">
+            
+            @include('layouts.sidebar')
 
-        <div class="flex-1 flex flex-col overflow-hidden">
-            @if (isset($header))
+            <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity duration-300 md:hidden" style="display:none;" x-cloak></div>
+
+            <div class="flex-1 flex flex-col overflow-hidden">
+                
                 <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                        {{ $header }}
-
+                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                        
+                        {{-- 2. Pulsante Hamburger (visibile solo su mobile) --}}
+                        <button @click.stop="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-500 focus:outline-none">
+                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                        
+                        @if (isset($header))
+                            <div class="flex-1 text-center md:text-left">{{ $header }}</div>
+                        @endif
+                        
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
@@ -48,13 +62,12 @@
                         </div>
                     </div>
                 </header>
-            @endif
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                {{ $slot }}
-            </main>
+                <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
-    </div>
-    @stack('scripts')
-</body>
+        @stack('scripts')
+    </body>
 </html>
