@@ -66,8 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-reservations', [CustomerDashboardController::class, 'index'])
         ->name('customer.dashboard');
 
-    Route::resource('reservations', ReservationController::class)->only(['store']);
-
+    Route::resource('reservations', ReservationController::class)->only(['store', 'destroy']);
+    
     Route::get('/services/{service}/reservations', function (Service $service) {
         $reservations = $service->reservations()
             ->where('start_time', '>=', now())

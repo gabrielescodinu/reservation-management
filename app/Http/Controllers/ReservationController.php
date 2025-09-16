@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Http\RedirectResponse;
 
 class ReservationController extends Controller
 {
@@ -63,5 +63,23 @@ class ReservationController extends Controller
 
         // 5. Reindirizza con un messaggio di successo
         return redirect()->route('customer.dashboard')->with('status', 'Prenotazione confermata con successo!');
+    }
+
+    public function destroy(Reservation $reservation): RedirectResponse
+    {
+        // 1. CONTROLLO DI AUTORIZZAZIONE (FONDAMENTALE!)
+        // Assicurati che l'utente loggato sia il proprietario della prenotazione.
+        if (auth()->user()->id !== $reservation->customer_id) {
+            // Se non lo è, blocca l'azione.
+            abort(403, 'Azione non autorizzata.');
+        }
+
+        // 2. CANCELLAZIONE
+        // Se il controllo passa, elimina la prenotazione.
+        $reservation->delete();
+
+        // 3. REINDIRIZZAMENTO
+        // Riporta l'utente alla sua dashboard con un messaggio di successo.
+        return redirect()->route('customer.dashboard')->with('status', 'Prenotazione annullata con successo!');
     }
 }
