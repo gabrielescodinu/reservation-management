@@ -21,6 +21,14 @@ class UserSeeder extends Seeder
         // Password comune per tutti gli utenti di test
         $password = Hash::make('password');
 
+        // --- CREAZIONE DEL SUPER ADMIN ---
+        User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@example.com',
+            'password' => $password,
+            'role' => 'superadmin',
+        ]);
+
         // --- CREAZIONE DEI WORKER ---
         User::create([
             'name' => 'Mario Rossi',

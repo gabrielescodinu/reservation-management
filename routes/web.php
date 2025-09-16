@@ -7,6 +7,7 @@ use App\Http\Controllers\WorkerDashboardController;
 use App\Http\Controllers\ReservationController;
 use App\Models\Service;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\SuperAdminDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,7 +32,6 @@ Route::middleware('auth')->group(function () {
     })->name('worker.dashboard');
 });
 
-// in routes/web.php
 
 Route::middleware('auth')->group(function () {
     // NUOVA ROTTA: Fornisce i dati delle prenotazioni al calendario
@@ -90,6 +90,11 @@ Route::middleware('auth')->group(function () {
 
         return response()->json($events);
     })->name('services.reservations');
+});
+
+Route::middleware(['auth', 'is.superadmin'])->group(function () {
+    Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'index'])
+        ->name('superadmin.dashboard');
 });
 
 require __DIR__.'/auth.php';
