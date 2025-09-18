@@ -5,53 +5,6 @@
         </h2>
     </x-slot>
 
-    @push('styles')
-        <style>
-            [x-cloak] {
-                display: none !important;
-            }
-
-            /* Stile base per gli eventi cliccabili */
-            .fc-event {
-                border-width: 2px !important;
-                padding: 5px;
-                cursor: pointer;
-                transition: opacity 0.2s ease;
-            }
-
-            .fc-event:hover {
-                opacity: 0.8;
-            }
-
-            /* Palette di colori per gli eventi */
-            .fc-event.event-blue {
-                background-color: rgba(59, 130, 246, 0.1) !important;
-                border-color: rgba(59, 130, 246, 1) !important;
-            }
-
-            .fc-event.event-green {
-                background-color: rgba(16, 185, 129, 0.1) !important;
-                border-color: rgba(16, 185, 129, 1) !important;
-            }
-
-            .fc-event.event-purple {
-                background-color: rgba(139, 92, 246, 0.1) !important;
-                border-color: rgba(139, 92, 246, 1) !important;
-            }
-
-            .fc-event.event-orange {
-                background-color: rgba(249, 115, 22, 0.1) !important;
-                border-color: rgba(249, 115, 22, 1) !important;
-            }
-
-            /* Regola per rendere il testo scuro e leggibile nelle viste week/day */
-            .fc-v-event .fc-event-title,
-            .fc-v-event .fc-event-time {
-                color: #1f2937 !important;
-            }
-        </style>
-    @endpush
-
     {{-- 1. Inizializziamo Alpine.js per gestire la modale --}}
     <div x-data="{
         showEventModal: false,

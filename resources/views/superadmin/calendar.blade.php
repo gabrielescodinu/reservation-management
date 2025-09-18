@@ -7,33 +7,23 @@
 
     @push('styles')
         <style>
-            [x-cloak] { display: none !important; }
-            /* Stili per gli eventi (colori, testo, etc.) - Copiali dalla dashboard del worker */
-            .fc-event { border-width: 2px !important; padding: 5px; cursor: pointer; }
-            .fc-event:hover { opacity: 0.8; }
-            .fc-event.event-blue { background-color: rgba(59, 130, 246, 0.1) !important; border-color: rgba(59, 130, 246, 1) !important; }
-            .fc-event.event-green { background-color: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 1) !important; }
-            .fc-event.event-purple { background-color: rgba(139, 92, 246, 0.1) !important; border-color: rgba(139, 92, 246, 1) !important; }
-            .fc-event.event-orange { background-color: rgba(249, 115, 22, 0.1) !important; border-color: rgba(249, 115, 22, 1) !important; }
-            .fc-v-event .fc-event-title, .fc-v-event .fc-event-time { color: #1f2937 !important; }
+
         </style>
     @endpush
 
     <div x-data="{
-            showEventModal: false,
-            selectedEvent: {},
-            handleEventClick(event) {
-                this.selectedEvent = {
-                    id: event.id,
-                    start: event.start,
-                    isPast: event.start < new Date(),
-                    ...event.extendedProps
-                };
-                this.showEventModal = true;
-            }
-        }"
-        @open-event-modal.window="handleEventClick($event.detail)"
-        class="py-12">
+        showEventModal: false,
+        selectedEvent: {},
+        handleEventClick(event) {
+            this.selectedEvent = {
+                id: event.id,
+                start: event.start,
+                isPast: event.start < new Date(),
+                ...event.extendedProps
+            };
+            this.showEventModal = true;
+        }
+    }" @open-event-modal.window="handleEventClick($event.detail)" class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -74,8 +64,21 @@
                 const calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
                     locale: 'it',
-                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
-                    events: '{{ route("superadmin.reservations.data") }}',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: '{{ route('superadmin.reservations.data') }}',
+                    hiddenDays: [0],
+                    slotMinTime: '08:00:00',
+                    slotMaxTime: '19:00:00',
+                    businessHours: {
+                        daysOfWeek: [1, 2, 3, 4, 5, 6],
+                        startTime: '08:00',
+                        endTime: '19:00',
+                    },
+                    allDaySlot: false,
                     eventClick: function(info) {
                         info.jsEvent.preventDefault();
                         const event = new CustomEvent('open-event-modal', {

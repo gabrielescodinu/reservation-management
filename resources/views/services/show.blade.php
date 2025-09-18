@@ -33,13 +33,36 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                <div class="md:col-span-1 bg-white p-6 shadow-sm sm:rounded-lg h-fit">
-                    <h3 class="text-lg font-bold">{{ $service->name }}</h3>
-                    <p class="mt-2 text-sm text-gray-600">Con {{ $service->worker->name }}</p>
-                    <p class="mt-4 text-gray-800 font-bold text-2xl">{{ number_format($service->price, 2, ',', '.') }} €</p>
-                    <p class="mt-1 text-sm text-gray-500">Durata: {{ $service->duration }} minuti</p>
-                    <p class="mt-4">{{ $service->description }}</p>
-                    <p class="mt-6 text-sm text-blue-600 font-semibold">Clicca su uno slot orario disponibile nel calendario per prenotare.</p>
+                {{-- Sostituisci la vecchia card con questa in services/show.blade.php --}}
+                <div class="md:col-span-1 bg-white p-6 rounded-2xl border border-gray-200 h-fit">
+
+                    {{-- Sezione Header: Icona e Nome Worker --}}
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Offerto da</p>
+                            <p class="font-semibold text-gray-800">{{ $service->worker->name }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Dettagli Principali del Servizio --}}
+                    <div class="mt-5">
+                        <h3 class="text-2xl font-bold text-gray-900">{{ $service->name }}</h3>
+                        <p class="mt-2 text-2xl font-bold text-gray-800">{{ number_format($service->price, 2, ',', '.') }} €</p>
+                        <div class="mt-3">
+                            <span class="bg-indigo-100 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">{{ $service->duration }} min</span>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-600">{{ $service->description }}</p>
+                    </div>
+
+                    {{-- Istruzioni per la Prenotazione --}}
+                    <div class="mt-6 border-t border-gray-100 pt-4">
+                        <p class="text-sm text-blue-600 font-semibold">Clicca su uno slot orario disponibile nel calendario per prenotare.</p>
+                    </div>
                 </div>
 
                 <div class="md:col-span-2 bg-white p-6 shadow-sm sm:rounded-lg">

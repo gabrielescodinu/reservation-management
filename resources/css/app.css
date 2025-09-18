@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Stili per gli eventi (colori, testo, etc.) - Copiali dalla dashboard del worker */
+.fc-event {
+    border-width: 2px !important;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.fc-event:hover {
+    opacity: 0.8;
+}
+
+.fc-event.event-blue {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: rgba(59, 130, 246, 1) !important;
+}
+
+.fc-event.event-green {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(16, 185, 129, 1) !important;
+}
+
+.fc-event.event-purple {
+    background-color: rgba(139, 92, 246, 0.1) !important;
+    border-color: rgba(139, 92, 246, 1) !important;
+}
+
+.fc-event.event-orange {
+    background-color: rgba(249, 115, 22, 0.1) !important;
+    border-color: rgba(249, 115, 22, 1) !important;
+}
+
+.fc-v-event .fc-event-title,
+.fc-v-event .fc-event-time {
+    color: #1f2937 !important;
+}
+
+/* --- Stili Responsive per la Toolbar del Calendario --- */
+@media (max-width: 767px) {
+
+    /* Rimpicciolisce il titolo del mese/settimana */
+    .fc-toolbar-title {
+        font-size: 1.1rem !important;
+        /* Rende il font più piccolo */
+        line-height: 1.2;
+    }
+
+    /* Rimpicciolisce il titolo del mese/settimana */
+    .fc-col-header-cell-cushion {
+        font-size: 0.75rem !important;
+        /* Rende il font più piccolo */
+    }
+
+    /* Rimpicciolisce tutti i pulsanti della toolbar */
+    .fc .fc-button {
+        padding: 0.3rem 0.6rem;
+        /* Meno spazio interno */
+        font-size: 0.75rem;
+        /* Testo più piccolo */
+    }
+
+    /* Riduce lo spazio generale della toolbar per compattarla */
+    .fc-header-toolbar.fc-toolbar {
+        margin-bottom: 0.75rem;
+        /* Meno spazio sotto la toolbar */
+        flex-wrap: wrap;
+        /* Permette agli elementi di andare a capo se non c'è spazio */
+        row-gap: 0.5rem;
+    }
+}
