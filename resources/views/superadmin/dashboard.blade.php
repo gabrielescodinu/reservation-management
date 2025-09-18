@@ -25,7 +25,9 @@
                                 <tr x-data="{ showConfirmModal: false }">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation->customer->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation->service->worker->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $reservation->service->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $reservation->service->name }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($reservation->start_time)->isoFormat('D MMM YYYY, HH:mm') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         @if (\Carbon\Carbon::parse($reservation->start_time)->isPast())
