@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+|--------------------------------------------------------------------------
+| Custom Styles for Calendar
+|--------------------------------------------------------------------------
+*/
 
 [x-cloak] {
     display: none !important;
 }
 
-/* Stili per gli eventi (colori, testo, etc.) - Copiali dalla dashboard del worker */
 .fc-event {
     border-width: 2px !important;
     padding: 5px;
