@@ -1,5 +1,5 @@
-<div class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-300 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0" :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
-    <div x-data="{ activeSection: '' }" class="flex flex-col w-64 bg-slate-900 text-slate-300">
+<div class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-950 text-slate-300 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0" :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
+    <div x-data="{ activeSection: '' }" class="flex flex-col w-64 bg-gray-950 text-slate-300">
 
         <div class="flex items-center h-16 flex-shrink-0 px-4 border-b border-slate-700">
             <a href="{{ route('dashboard') }}" class="flex items-center">
@@ -80,7 +80,7 @@
                     {{-- Menu Condizionale per Worker --}}
                     {{-- @if (auth()->user()->role === 'worker')
                     <div class="space-y-2">
-                        <button @click="activeSection = (activeSection === 'worker' ? '' : 'worker')" class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-300 rounded-lg hover:bg-slate-700 hover:text-white">
+                        <button @click="activeSection = (activeSection === 'worker' ? '' : 'worker')" class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-300 rounded-lg hover:bg-gray-700 hover:text-white">
                             <div class="flex items-center">
                                 <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
