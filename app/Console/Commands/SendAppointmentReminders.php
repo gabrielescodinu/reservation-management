@@ -49,6 +49,12 @@ class SendAppointmentReminders extends Command
             $this->line("Promemoria inviato a: {$reservation->customer->email}");
         }
 
+        // in produzione usare queue per inviare le email in background
+        // foreach ($reservations as $reservation) {
+        //     Mail::to($reservation->customer->email)->queue(new AppointmentReminder($reservation));
+        //     $this->line("Promemoria accodato per: {$reservation->customer->email}");
+        // }
+
         $this->info('Tutti i promemoria sono stati inviati con successo!');
         return 0;
     }
